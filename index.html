@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIXXIE NEWERA | Personal Website</title>
+  <script src="script.js"></script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cyan: '#00f3ff',
+              purple: '#b000ff',
+              pink: '#ff007f',
+              dark: '#0a0a12',
+              card: '#121222'
+            }
+          },
+          boxShadow: {
+            'neon-cyan': '0 0 15px rgba(0, 243, 255, 0.4)',
+            'neon-purple': '0 0 15px rgba(176, 0, 255, 0.4)',
+            'neon-pink': '0 0 15px rgba(255, 0, 127, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-brand-dark text-slate-100 transition-colors duration-300 min-h-screen flex flex-col overflow-x-hidden selection:bg-brand-cyan selection:text-black">
+
+  <!-- ==================== AUTHENTICATION OVERLAY / SCREEN ==================== -->
+  <div id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/95 backdrop-blur-md transition-opacity duration-500">
+    <!-- Animated background accents -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-brand-purple/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-brand-cyan/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="glass-panel w-full max-w-md p-8 rounded-2xl shadow-2xl relative border border-brand-cyan/30">
+      
+      <!-- Logo Header -->
+      <div class="text-center mb-8">
+        <h1 class="font-orbitron text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-purple-400 to-brand-pink glow-text">
+          DIXXIE NEWERA
+        </h1>
+        <p class="text-xs tracking-widest text-slate-400 uppercase mt-2">Personal Portal Authorization</p>
+      </div>
+
+      <!-- Notification Toast inside Auth -->
+      <div id="authToast" class="hidden mb-4 p-3 text-xs rounded-lg text-center transition-all"></div>
+
+      <!-- Auth Tabs Switcher -->
+      <div class="flex bg-slate-900/60 p-1 rounded-xl mb-6 border border-slate-800">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-brand-cyan to-blue-600 text-black shadow-neon-cyan">
+          <i class="fa-solid fa-key mr-2"></i>Sign In
+        </button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300">
+          <i class="fa-solid fa-user-plus mr-2"></i>Create Account
+        </button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Username</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <input type="text" id="loginUser" required placeholder="Enter username" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan text-sm transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="loginPass" required placeholder="Enter password" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan text-sm transition">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-brand-cyan via-blue-500 to-brand-purple text-black font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-brand-cyan/20 hover:opacity-90 active:scale-95 transition-all duration-200 mt-2">
+          Access Portal
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Full Name</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-id-card"></i>
+            </span>
+            <input type="text" id="regName" required placeholder="Your full name" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple text-sm transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Username</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-at"></i>
+            </span>
+            <input type="text" id="regUser" required placeholder="Choose a username" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple text-sm transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-shield-halved"></i>
+            </span>
+            <input type="password" id="regPass" required placeholder="Create password (min 4 chars)" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple text-sm transition">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-brand-purple via-pink-600 to-brand-pink text-white font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-brand-purple/30 hover:opacity-90 active:scale-95 transition-all duration-200 mt-2">
+          Create Account
+        </button>
+      </form>
+
+      <!-- Quick Demo Login Action -->
+      <div class="mt-6 pt-4 border-t border-slate-800/80 text-center">
+        <p class="text-xs text-slate-400 mb-2">Want to explore instantly without creating an account?</p>
+        <button onclick="useDemoLogin()" class="text-xs px-4 py-2 rounded-lg bg-slate-800 text-brand-cyan hover:bg-slate-700 border border-brand-cyan/30 transition">
+          <i class="fa-solid fa-bolt mr-1.5"></i>Quick Demo Login (dixxie / 1234)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== MAIN DASHBOARD WEBSITE ==================== -->
+  <div id="mainWebsite" class="flex-1 flex flex-col min-h-screen">
+    
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          
+          <!-- Left: Hamburger Button + Brand -->
+          <div class="flex items-center gap-4">
+            <!-- Sidebar Toggle (3 lines menu icon) -->
+            <button id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle Navigation Menu" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 text-brand-cyan transition hover:scale-105 active:scale-95">
+              <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+
+            <!-- Brand Logo -->
+            <a href="#home" class="flex items-center gap-3">
+              <img src="logo.jpeg" alt="Logo DIXXIE NEWERA" class="w-12 h-12 rounded-xl object-cover border border-brand-cyan/40 shadow-neon-cyan">
+              <span class="font-orbitron font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-purple-400 hidden sm:inline-block">
+                DIXXIE <span class="text-brand-pink font-light">NEWERA</span>
+              </span>
+            </a>
+          </div>
+
+          <!-- Center Navigation Links (Desktop) -->
+          <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+            <a href="#about" class="hover:text-brand-cyan transition">About</a>
+            <a href="#struktur" class="hover:text-brand-cyan transition">Struktur</a>
+            <a href="#gallery" class="hover:text-brand-cyan transition">Gallery</a>
+            <a href="#contact" class="hover:text-brand-cyan transition">Contact</a>
+          </nav>
+
+          <!-- Right: Controls & User Profile -->
+          <div class="flex items-center gap-3">
+            <!-- Theme Toggle Button -->
+            <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-800 text-amber-400 hover:text-amber-300 transition" title="Toggle Theme">
+              <i id="themeIcon" class="fa-solid fa-sun text-lg"></i>
+            </button>
+
+            <!-- User Badge & Logout -->
+            <div class="flex items-center gap-3 pl-3 border-l border-slate-800">
+              <div class="text-right hidden sm:block">
+                <p id="currentUserDisplay" class="text-xs font-bold text-slate-200">User</p>
+                <p class="text-[10px] text-brand-cyan uppercase">Verified Member</p>
+              </div>
+              <button onclick="handleLogout()" title="Logout" class="p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- SLIDE-OUT SIDEBAR NAV DRAWER -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden transition-opacity duration-300"></div>
+    
+    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 z-50 w-72 glass-panel border-r border-slate-800 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between">
+      <div>
+        <!-- Sidebar Header -->
+        <div class="p-6 border-b border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-cyan to-brand-purple flex items-center justify-center text-black">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <h2 class="font-orbitron font-bold text-sm text-brand-cyan">DIXXIE NEWERA</h2>
+              <span class="text-[10px] text-slate-400 tracking-wider">CREATOR & DEVELOPER</span>
+            </div>
+          </div>
+          <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Sidebar Links -->
+        <nav class="p-4 space-y-1">
+          <a href="#about" onclick="toggleSidebar()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800/70 text-slate-300 hover:text-brand-cyan transition">
+            <i class="fa-solid fa-user-astronaut w-5 text-brand-cyan"></i>
+            <span class="font-medium text-sm">Profile / About Me</span>
+          </a>
+          <a href="#struktur" onclick="toggleSidebar()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800/70 text-slate-300 hover:text-brand-cyan transition">
+            <i class="fa-solid fa-sitemap w-5 text-emerald-400"></i>
+            <span class="font-medium text-sm">Struktur</span>
+          </a>
+          <a href="#gallery" onclick="toggleSidebar()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800/70 text-slate-300 hover:text-brand-cyan transition">
+            <i class="fa-solid fa-photo-film w-5 text-blue-400"></i>
+            <span class="font-medium text-sm">Media Gallery</span>
+          </a>
+          <a href="#contact" onclick="toggleSidebar()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800/70 text-slate-300 hover:text-brand-cyan transition">
+            <i class="fa-solid fa-paper-plane w-5 text-emerald-400"></i>
+            <span class="font-medium text-sm">Contact Me</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-slate-800/80">
+        <p class="text-xs text-slate-500 uppercase tracking-widest mb-3 px-2">Connect Social</p>
+        <div class="flex justify-around items-center mb-4">
+          <a href="#" class="p-2.5 rounded-lg bg-slate-800 text-slate-300 hover:text-brand-cyan hover:bg-slate-700 transition"><i class="fa-brands fa-github text-lg"></i></a>
+          <a href="#" class="p-2.5 rounded-lg bg-slate-800 text-slate-300 hover:text-brand-pink hover:bg-slate-700 transition"><i class="fa-brands fa-instagram text-lg"></i></a>
+          <a href="#" class="p-2.5 rounded-lg bg-slate-800 text-slate-300 hover:text-blue-400 hover:bg-slate-700 transition"><i class="fa-brands fa-twitter text-lg"></i></a>
+          <a href="#" class="p-2.5 rounded-lg bg-slate-800 text-slate-300 hover:text-brand-purple hover:bg-slate-700 transition"><i class="fa-brands fa-discord text-lg"></i></a>
+        </div>
+        <button onclick="handleLogout()" class="w-full py-2.5 px-4 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition font-semibold text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-power-off"></i>
+          Log Out Session
+        </button>
+      </div>
+    </aside>
+
+
+    <!-- ==================== PAGE CONTENT ==================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+      <!-- HERO SECTION -->
+      <section id="home" class="relative pt-6 pb-12 flex flex-col md:flex-row items-center justify-between gap-10">
+        <!-- Glowing Ambient Lights -->
+        <div class="absolute top-0 right-1/4 w-72 h-72 bg-brand-cyan/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-10 w-80 h-80 bg-brand-purple/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex-1 space-y-6 text-center md:text-left z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-brand-cyan/40 text-xs text-brand-cyan">
+            <span class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></span>
+            WELCOME TO THE NEXT GENERATION
+          </div>
+          
+          <div class="flex flex-col sm:flex-row items-center md:items-start gap-4">
+            <img src="logo.jpeg" alt="Logo DIXXIE NEWERA" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-brand-cyan/40 shadow-neon-cyan">
+            <h1 class="font-orbitron text-4xl sm:text-6xl font-black leading-tight">
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-purple-400 to-brand-pink glow-text">
+                DIXXIE NEWERA
+              </span>
+            </h1>
+          </div>
+
+          <p class="text-slate-400 max-w-xl text-base sm:text-lg leading-relaxed">
+            Digital Architect, Creative Developer, and Futuristic UI/UX Designer pushing the boundaries of interactive web experiences.
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+            <a href="#contact" class="px-6 py-3 rounded-xl glass-panel border border-slate-700 text-slate-200 font-bold uppercase tracking-wider text-xs hover:border-brand-cyan transition">
+              Get In Touch
+            </a>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ORGANIZATION STRUCTURE -->
+      <section id="struktur" class="scroll-mt-24 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-8 bg-emerald-400 rounded-full"></div>
+          <h2 class="font-orbitron text-2xl font-bold tracking-wide">STRUKTUR ORGANISASI</h2>
+        </div>
+        <div class="flex items-center gap-4">
+          <img src="logo.jpeg" alt="Logo DIXXIE NEWERA" class="w-16 h-16 rounded-xl object-cover border border-brand-cyan/40 shadow-neon-cyan">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="glass-panel p-5 rounded-2xl border border-brand-cyan/40 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-xl"><i class="fa-solid fa-lightbulb"></i></div>
+            <h3 class="font-orbitron font-bold text-brand-cyan">Founder</h3>
+            <p class="mt-2 text-sm font-semibold text-slate-200">SAPZY</p>
+          </div>
+          <div class="glass-panel p-5 rounded-2xl border border-brand-purple/40 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-brand-purple/10 text-brand-purple flex items-center justify-center text-xl"><i class="fa-solid fa-crown"></i></div>
+            <h3 class="font-orbitron font-bold text-brand-purple">Owner</h3>
+            <p class="mt-2 text-sm font-semibold text-slate-200">IWAN</p>
+          </div>
+          <div class="glass-panel p-5 rounded-2xl border border-brand-pink/40 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-brand-pink/10 text-brand-pink flex items-center justify-center text-xl"><i class="fa-solid fa-user-tie"></i></div>
+            <h3 class="font-orbitron font-bold text-brand-pink">Petinggi</h3>
+            <p class="mt-2 text-sm font-semibold text-slate-200">TOROO</p>
+          </div>
+          <div class="glass-panel p-5 rounded-2xl border border-emerald-400/40 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-emerald-400/10 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-solid fa-people-group"></i></div>
+            <h3 class="font-orbitron font-bold text-emerald-400">Pengurus</h3>
+            <p class="mt-2 text-sm font-semibold text-slate-200">PUTRAA</p>
+          </div>
+          <div class="glass-panel p-5 rounded-2xl border border-blue-400/40 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center text-xl"><i class="fa-solid fa-star"></i></div>
+            <h3 class="font-orbitron font-bold text-blue-400">Pemain Inti</h3>
+            <p class="mt-2 text-sm font-semibold text-slate-200">TOROO · IWAN · HANZ · POTA</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEDIA GALLERY -->
+      <section id="gallery" class="scroll-mt-24 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-8 bg-blue-500 rounded-full"></div>
+          <h2 class="font-orbitron text-2xl font-bold tracking-wide">MEDIA GALLERY</h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass-panel p-2 rounded-xl border border-slate-800 hover:border-brand-cyan transition duration-300">
+          </div>
+          <div class="glass-panel p-2 rounded-xl border border-slate-800 hover:border-brand-purple transition duration-300">
+          </div>
+          <div class="glass-panel p-2 rounded-xl border border-slate-800 hover:border-brand-pink transition duration-300">
+          </div>
+          <div class="glass-panel p-2 rounded-xl border border-slate-800 hover:border-emerald-400 transition duration-300">
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE CONTACT FORM -->
+      <section id="contact" class="scroll-mt-24 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-8 bg-emerald-400 rounded-full"></div>
+          <h2 class="font-orbitron text-2xl font-bold tracking-wide">GET IN TOUCH</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Contact Info -->
+          <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6">
+            <h3 class="font-orbitron text-xl font-bold text-brand-cyan">Let's Connect & Build</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Have a futuristic project idea or want to collaborate with DIXXIE NEWERA? Drop a message below and I will respond swiftly.
+            </p>
+
+            <div class="space-y-4 pt-2">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-brand-cyan">
+                  <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] text-slate-400 uppercase">Direct Email</p>
+                  <p class="text-sm font-semibold text-slate-200">contact@dixxienewera.io</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-brand-purple">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] text-slate-400 uppercase">Base Station</p>
+                  <p class="text-sm font-semibold text-slate-200">Cyber Hub, Earth</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800">
+            <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Your Name</label>
+                <input type="text" required placeholder="John Doe" class="w-full px-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-cyan text-sm transition">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Email Address</label>
+                <input type="email" required placeholder="john@example.com" class="w-full px-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-cyan text-sm transition">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Message</label>
+                <textarea rows="4" required placeholder="Write your message here..." class="w-full px-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-brand-cyan text-sm transition resize-none"></textarea>
+              </div>
+              <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 hover:opacity-90 transition">
+                Send Message
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto glass-panel border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>&copy; 2026 <span class="font-orbitron font-bold text-brand-cyan">DIXXIE NEWERA</span>. All Rights Reserved.</p>
+        <p>Built with Cyberpunk Aesthetics & Responsive Design</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==================== JAVASCRIPT APP LOGIC ==================== -->
+  <script>
+    // Storage Key for registered users in LocalStorage
+    const USERS_KEY = 'dixxie_registered_users';
+    const CURRENT_USER_KEY = 'dixxie_active_session';
+
+    // Seed default demo account if none exists
+    function initUsers() {
+      let users = JSON.parse(localStorage.getItem(USERS_KEY));
+      if (!users || !Array.isArray(users)) {
+        users = [
+          { username: 'dixxie', name: 'Dixxie Owner', password: '123' }
+        ];
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      }
+    }
+
+    // Check auth on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initUsers();
+      checkAuthSession();
+    });
+
+    function checkAuthSession() {
+      const activeUser = localStorage.getItem(CURRENT_USER_KEY);
+      const authScreen = document.getElementById('authScreen');
+      const userDisplay = document.getElementById('currentUserDisplay');
+
+      if (activeUser) {
+        authScreen.classList.add('hidden');
+        userDisplay.textContent = activeUser.toUpperCase();
+      } else {
+        authScreen.classList.remove('hidden');
+      }
+    }
+
+    // Auth Tab Switcher
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const regForm = document.getElementById('registerForm');
+      const tabLoginBtn = document.getElementById('tabLoginBtn');
+      const tabRegBtn = document.getElementById('tabRegisterBtn');
+      const toast = document.getElementById('authToast');
+
+      toast.classList.add('hidden');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+        tabLoginBtn.className = "flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-brand-cyan to-blue-600 text-black shadow-neon-cyan";
+        tabRegBtn.className = "flex-1 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300";
+      } else {
+        loginForm.classList.add('hidden');
+        regForm.classList.remove('hidden');
+        tabRegBtn.className = "flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-brand-purple to-brand-pink text-white shadow-neon-purple";
+        tabLoginBtn.className = "flex-1 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300";
+      }
+    }
+
+    // Toast Notice helper
+    function showAuthToast(msg, type = 'error') {
+      const toast = document.getElementById('authToast');
+      toast.classList.remove('hidden', 'bg-red-500/20', 'text-red-300', 'bg-emerald-500/20', 'text-emerald-300');
+      
+      if (type === 'error') {
+        toast.classList.add('bg-red-500/20', 'text-red-300', 'border', 'border-red-500/30');
+      } else {
+        toast.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border', 'border-emerald-500/30');
+      }
+      toast.textContent = msg;
+    }
+
+    // Login Handler
+    function handleLogin(e) {
+      e.preventDefault();
+      const userVal = document.getElementById('loginUser').value.trim();
+      const passVal = document.getElementById('loginPass').value.trim();
+
+      const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+      const match = users.find(u => u.username.toLowerCase() === userVal.toLowerCase() && u.password === passVal);
+
+      if (match) {
+        localStorage.setItem(CURRENT_USER_KEY, match.username);
+        showAuthToast('Login successful! Launching portal...', 'success');
+        setTimeout(() => {
+          checkAuthSession();
+        }, 600);
+      } else {
+        showAuthToast('Invalid username or password. Try demo: dixxie / 123', 'error');
+      }
+    }
+
+    // Register Handler
+    function handleRegister(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById('regName').value.trim();
+      const userVal = document.getElementById('regUser').value.trim();
+      const passVal = document.getElementById('regPass').value.trim();
+
+      if (passVal.length < 3) {
+        showAuthToast('Password must be at least 3 characters.', 'error');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+      const exists = users.some(u => u.username.toLowerCase() === userVal.toLowerCase());
+
+      if (exists) {
+        showAuthToast('Username already taken. Try another.', 'error');
+        return;
+      }
+
+      users.push({ name: nameVal, username: userVal, password: passVal });
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+      showAuthToast('Account created successfully! Switching to sign in...', 'success');
+      setTimeout(() => {
+        switchAuthTab('login');
+        document.getElementById('loginUser').value = userVal;
+        document.getElementById('loginPass').value = '';
+      }, 1000);
+    }
+
+    // Quick Demo Login Action
+    function useDemoLogin() {
+      document.getElementById('loginUser').value = 'dixxie';
+      document.getElementById('loginPass').value = '123';
+      showAuthToast('Demo credentials pre-filled! Click Access Portal.', 'success');
+    }
+
+    // Logout
+    function handleLogout() {
+      localStorage.removeItem(CURRENT_USER_KEY);
+      checkAuthSession();
+      // Reset sidebar if open
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('sidebarOverlay').classList.add('hidden');
+    }
+
+    // Sidebar Toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      
+      const isOpen = !sidebar.classList.contains('-translate-x-full');
+      if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      } else {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+    }
+
+    // Theme Toggle (Dark / Light)
+    function toggleTheme() {
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('themeIcon');
+      
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        document.body.classList.remove('bg-brand-dark', 'text-slate-100');
+        document.body.classList.add('bg-slate-100', 'text-slate-900');
+      } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        document.body.classList.remove('bg-slate-100', 'text-slate-900');
+        document.body.classList.add('bg-brand-dark', 'text-slate-100');
+      }
+    }
+
+    // Contact Form Handler
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      alert('Thank you for reaching out to DIXXIE NEWERA! Your message has been sent successfully.');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>
